@@ -1,0 +1,68 @@
+# catalog-demo.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: payments
+spec:
+  owner: group:default/platform-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: checkout
+spec:
+  owner: group:default/platform-team
+  domain: payments
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: checkout-api
+  annotations:
+    github.com/project-slug: yourorg/checkout-api
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/platform-team
+  system: checkout
+  providesApis: [checkout-rest]
+  dependsOn: [resource:checkout-db]
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: checkout-rest
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/platform-team
+  system: checkout
+  definition: |
+    openapi: 3.0.0
+    info: { title: Checkout, version: 1.0.0 }
+    paths: {}
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: checkout-db
+spec:
+  type: database
+  owner: group:default/platform-team
+  system: checkout
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-team
+spec:
+  type: team
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jacky
+spec:
+  memberOf: [platform-team]
